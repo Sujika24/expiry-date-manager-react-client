@@ -36,11 +36,13 @@ export async function fetchProducts({ page = 1, limit = 20, search = '', expiryF
 
   const queryString = queryParams.toString() ? `?${queryParams.toString()}` : ''
 
-  const candidateUrls = [
-    `${API_BASE_URL}/api/products${queryString}`,
-    `http://localhost:5001/api/products${queryString}`,
-    `http://localhost:5000/api/products${queryString}`,
-  ]
+  const candidateUrls = [`${API_BASE_URL}/api/products${queryString}`]
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push(
+      `http://localhost:5001/api/products${queryString}`,
+      `http://localhost:5000/api/products${queryString}`
+    )
+  }
 
   const uniqueUrls = [...new Set(candidateUrls)]
   let lastErrorMsg = 'Network error. Could not reach backend server.'
@@ -49,6 +51,7 @@ export async function fetchProducts({ page = 1, limit = 20, search = '', expiryF
     try {
       const response = await fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeader(),
@@ -89,11 +92,13 @@ export async function fetchProducts({ page = 1, limit = 20, search = '', expiryF
  * Create a new product record
  */
 export async function createProduct(productData) {
-  const candidateUrls = [
-    `${API_BASE_URL}/api/products`,
-    'http://localhost:5001/api/products',
-    'http://localhost:5000/api/products',
-  ]
+  const candidateUrls = [`${API_BASE_URL}/api/products`]
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push(
+      'http://localhost:5001/api/products',
+      'http://localhost:5000/api/products'
+    )
+  }
 
   const uniqueUrls = [...new Set(candidateUrls)]
   let lastErrorMsg = 'Network error. Could not reach backend server.'
@@ -102,6 +107,7 @@ export async function createProduct(productData) {
     try {
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeader(),
@@ -137,11 +143,13 @@ export async function createProduct(productData) {
  * Update an existing product by ID
  */
 export async function updateProduct(id, productData) {
-  const candidateUrls = [
-    `${API_BASE_URL}/api/products/${id}`,
-    `http://localhost:5001/api/products/${id}`,
-    `http://localhost:5000/api/products/${id}`,
-  ]
+  const candidateUrls = [`${API_BASE_URL}/api/products/${id}`]
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push(
+      `http://localhost:5001/api/products/${id}`,
+      `http://localhost:5000/api/products/${id}`
+    )
+  }
 
   const uniqueUrls = [...new Set(candidateUrls)]
   let lastErrorMsg = 'Network error. Could not reach backend server.'
@@ -150,6 +158,7 @@ export async function updateProduct(id, productData) {
     try {
       const response = await fetch(url, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeader(),
@@ -185,11 +194,13 @@ export async function updateProduct(id, productData) {
  * Delete a product by ID
  */
 export async function deleteProduct(id) {
-  const candidateUrls = [
-    `${API_BASE_URL}/api/products/${id}`,
-    `http://localhost:5001/api/products/${id}`,
-    `http://localhost:5000/api/products/${id}`,
-  ]
+  const candidateUrls = [`${API_BASE_URL}/api/products/${id}`]
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push(
+      `http://localhost:5001/api/products/${id}`,
+      `http://localhost:5000/api/products/${id}`
+    )
+  }
 
   const uniqueUrls = [...new Set(candidateUrls)]
   let lastErrorMsg = 'Network error. Could not reach backend server.'
@@ -198,6 +209,7 @@ export async function deleteProduct(id) {
     try {
       const response = await fetch(url, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeader(),
@@ -226,3 +238,4 @@ export async function deleteProduct(id) {
 
   return { success: false, message: lastErrorMsg }
 }
+

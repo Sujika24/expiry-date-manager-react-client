@@ -24,25 +24,27 @@ export async function loginUser(credentials) {
   const candidateUrls = [
     `${API_BASE_URL}/auth/login`,
     `${API_BASE_URL}/api/auth/login`,
-    'http://localhost:5001/auth/login',
-    'http://localhost:5000/auth/login',
   ]
 
-  // Remove duplicate URLs if API_BASE_URL matches any fallback
+  // Add localhost fallbacks only in development when VITE_API_BASE_URL is not set
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push('http://localhost:5001/auth/login', 'http://localhost:5000/auth/login')
+  }
+
   const uniqueUrls = [...new Set(candidateUrls)]
-  let lastErrorMsg = 'Network error. Could not reach backend server on port 5001.'
+  let lastErrorMsg = 'Network error. Could not reach backend server.'
 
   for (const url of uniqueUrls) {
     try {
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
       })
 
-      // If route not found on this candidate URL, try next candidate
       if (response.status === 404) {
         continue
       }
@@ -71,7 +73,7 @@ export async function loginUser(credentials) {
   return {
     success: false,
     message: lastErrorMsg.includes('Failed to fetch')
-      ? 'Unable to connect to backend server. Please verify Express server is running on http://localhost:5001.'
+      ? 'Unable to connect to backend server. Please verify backend server is running and accessible.'
       : lastErrorMsg,
   }
 }
@@ -84,24 +86,26 @@ export async function registerUser(userData) {
   const candidateUrls = [
     `${API_BASE_URL}/auth/register`,
     `${API_BASE_URL}/api/auth/register`,
-    'http://localhost:5001/auth/register',
-    'http://localhost:5000/auth/register',
   ]
 
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    candidateUrls.push('http://localhost:5001/auth/register', 'http://localhost:5000/auth/register')
+  }
+
   const uniqueUrls = [...new Set(candidateUrls)]
-  let lastErrorMsg = 'Network error. Could not reach backend server on port 5001.'
+  let lastErrorMsg = 'Network error. Could not reach backend server.'
 
   for (const url of uniqueUrls) {
     try {
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
       })
 
-      // If route not found on this candidate URL, try next candidate
       if (response.status === 404) {
         continue
       }
@@ -130,7 +134,8 @@ export async function registerUser(userData) {
   return {
     success: false,
     message: lastErrorMsg.includes('Failed to fetch')
-      ? 'Unable to connect to backend server. Please verify Express server is running on http://localhost:5001.'
+      ? 'Unable to connect to backend server. Please verify backend server is running and accessible.'
       : lastErrorMsg,
   }
 }
+
